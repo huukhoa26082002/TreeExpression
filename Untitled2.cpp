@@ -113,7 +113,7 @@ node* CreateTree(string PF)//tao cay
         {
             node* new_node = new node();
             new_node->data = temp;
-            if (IsOperator(temp[0]))
+            if (IsOperator(temp[0]) && temp.length() == 1)
             {
                 new_node->right = _stack.top();
                 _stack.pop();
@@ -164,6 +164,11 @@ string _Postfix(string st)//chuyen bieu thuc sang bieu thuc hau to
                         t.pop();
                         break;
             default :
+                if ((i == 0 && st[i] == '-')|| (st[i] == '-' && _getpriority(st[i-1]) != 0))
+                {
+                    tmp = st[i];
+                    continue;
+                }
                 if (_getpriority(st[i]) == 0)
                 {
                     tmp = tmp + st[i];
@@ -205,7 +210,14 @@ double Cal(node *root)//tinh gia tri bieu thuc
 {
     if (root->left == NULL && root->right == NULL)
     {
-        return stod(root->data);
+        string temp = root->data;
+        char tm = temp[0];
+        if (tm == '-')
+        {
+            temp.erase(0,1);
+            return -stod(temp);
+        }
+        else return stod(temp);
     }
     double x = Cal(root->left);
     double y = Cal(root->right);
@@ -224,14 +236,12 @@ int main()
     node* root;
     cout<<"Nhap bieu thuc"<< endl;
     getline(cin,s);
-    //s = "(A-B)-C";
-    //s = "A-(B-C)";
     s = xoacach(s);
     PostFix = _Postfix(s);
     PostFix = PostFix + " ";
     cout << "Bieu thuc hau to(Postfix) : "<<PostFix << endl;
     root = CreateTree(PostFix);//tao cay
-    //_display_tree(root);//print cay
+    _display_tree(root);//print cay
     cout << "Gia tri bieu thuc : ";
     cout <<fixed << setprecision(3) <<   Cal(root);//tinh bieu thuc
     return 0;
